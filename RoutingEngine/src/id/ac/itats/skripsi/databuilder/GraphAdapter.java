@@ -101,6 +101,7 @@ public class GraphAdapter {
 				.where(NodeDao.Properties.NodeID.eq(nodeID)).list().get(0);
 	}
 
+	//FIXME cursor window full
 	// XXX 49.45247s
 	public Graph buildGraph() {
 		List<Way> result = wayDao.queryBuilder().orderAsc(WayDao.Properties.Id)
