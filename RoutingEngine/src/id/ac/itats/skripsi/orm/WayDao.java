@@ -30,14 +30,15 @@ public class WayDao extends AbstractDao<Way, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property WayID = new Property(1, String.class, "wayID", false, "WAY_ID");
-        public final static Property SourceNode = new Property(2, Long.class, "sourceNode", false, "SOURCE_NODE");
-        public final static Property TargetNode = new Property(3, Long.class, "targetNode", false, "TARGET_NODE");
+        public final static Property Fk_sourceNode = new Property(2, Long.class, "fk_sourceNode", false, "FK_SOURCE_NODE");
+        public final static Property Fk_targetNode = new Property(3, Long.class, "fk_targetNode", false, "FK_TARGET_NODE");
         public final static Property Weight = new Property(4, Double.class, "weight", false, "WEIGHT");
     };
 
     private DaoSession daoSession;
 
-    private Query<Way> node_AdjacenciesQuery;
+    private Query<Way> node_SourceAdjacenciesQuery;
+    private Query<Way> node_TargetAdjacenciesQuery;
 
     public WayDao(DaoConfig config) {
         super(config);
@@ -54,12 +55,14 @@ public class WayDao extends AbstractDao<Way, Long> {
         db.execSQL("CREATE TABLE " + constraint + "'WAY' (" + //
                 "'_id' INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "'WAY_ID' TEXT," + // 1: wayID
-                "'SOURCE_NODE' INTEGER," + // 2: sourceNode
-                "'TARGET_NODE' INTEGER," + // 3: targetNode
+                "'FK_SOURCE_NODE' INTEGER," + // 2: fk_sourceNode
+                "'FK_TARGET_NODE' INTEGER," + // 3: fk_targetNode
                 "'WEIGHT' REAL);"); // 4: weight
         // Add Indexes
-        db.execSQL("CREATE INDEX " + constraint + "IDX_WAY_TARGET_NODE ON WAY" +
-                " (TARGET_NODE);");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_WAY_FK_SOURCE_NODE ON WAY" +
+                " (FK_SOURCE_NODE);");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_WAY_FK_TARGET_NODE ON WAY" +
+                " (FK_TARGET_NODE);");
     }
 
     /** Drops the underlying database table. */
@@ -83,14 +86,14 @@ public class WayDao extends AbstractDao<Way, Long> {
             stmt.bindString(2, wayID);
         }
  
-        Long sourceNode = entity.getSourceNode();
-        if (sourceNode != null) {
-            stmt.bindLong(3, sourceNode);
+        Long fk_sourceNode = entity.getFk_sourceNode();
+        if (fk_sourceNode != null) {
+            stmt.bindLong(3, fk_sourceNode);
         }
  
-        Long targetNode = entity.getTargetNode();
-        if (targetNode != null) {
-            stmt.bindLong(4, targetNode);
+        Long fk_targetNode = entity.getFk_targetNode();
+        if (fk_targetNode != null) {
+            stmt.bindLong(4, fk_targetNode);
         }
  
         Double weight = entity.getWeight();
@@ -117,8 +120,8 @@ public class WayDao extends AbstractDao<Way, Long> {
         Way entity = new Way( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // wayID
-            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // sourceNode
-            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // targetNode
+            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2), // fk_sourceNode
+            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3), // fk_targetNode
             cursor.isNull(offset + 4) ? null : cursor.getDouble(offset + 4) // weight
         );
         return entity;
@@ -129,8 +132,8 @@ public class WayDao extends AbstractDao<Way, Long> {
     public void readEntity(Cursor cursor, Way entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setWayID(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setSourceNode(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
-        entity.setTargetNode(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
+        entity.setFk_sourceNode(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
+        entity.setFk_targetNode(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
         entity.setWeight(cursor.isNull(offset + 4) ? null : cursor.getDouble(offset + 4));
      }
     
@@ -157,17 +160,31 @@ public class WayDao extends AbstractDao<Way, Long> {
         return true;
     }
     
-    /** Internal query to resolve the "adjacencies" to-many relationship of Node. */
-    public List<Way> _queryNode_Adjacencies(Long sourceNode) {
+    /** Internal query to resolve the "sourceAdjacencies" to-many relationship of Node. */
+    public List<Way> _queryNode_SourceAdjacencies(Long fk_sourceNode) {
         synchronized (this) {
-            if (node_AdjacenciesQuery == null) {
+            if (node_SourceAdjacenciesQuery == null) {
                 QueryBuilder<Way> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.SourceNode.eq(null));
-                node_AdjacenciesQuery = queryBuilder.build();
+                queryBuilder.where(Properties.Fk_sourceNode.eq(null));
+                node_SourceAdjacenciesQuery = queryBuilder.build();
             }
         }
-        Query<Way> query = node_AdjacenciesQuery.forCurrentThread();
-        query.setParameter(0, sourceNode);
+        Query<Way> query = node_SourceAdjacenciesQuery.forCurrentThread();
+        query.setParameter(0, fk_sourceNode);
+        return query.list();
+    }
+
+    /** Internal query to resolve the "targetAdjacencies" to-many relationship of Node. */
+    public List<Way> _queryNode_TargetAdjacencies(Long fk_targetNode) {
+        synchronized (this) {
+            if (node_TargetAdjacenciesQuery == null) {
+                QueryBuilder<Way> queryBuilder = queryBuilder();
+                queryBuilder.where(Properties.Fk_targetNode.eq(null));
+                node_TargetAdjacenciesQuery = queryBuilder.build();
+            }
+        }
+        Query<Way> query = node_TargetAdjacenciesQuery.forCurrentThread();
+        query.setParameter(0, fk_targetNode);
         return query.list();
     }
 
@@ -179,8 +196,11 @@ public class WayDao extends AbstractDao<Way, Long> {
             SqlUtils.appendColumns(builder, "T", getAllColumns());
             builder.append(',');
             SqlUtils.appendColumns(builder, "T0", daoSession.getNodeDao().getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T1", daoSession.getNodeDao().getAllColumns());
             builder.append(" FROM WAY T");
-            builder.append(" LEFT JOIN NODE T0 ON T.'SOURCE_NODE'=T0.'NODE_ID'");
+            builder.append(" LEFT JOIN NODE T0 ON T.'FK_SOURCE_NODE'=T0.'NODE_ID'");
+            builder.append(" LEFT JOIN NODE T1 ON T.'FK_TARGET_NODE'=T1.'NODE_ID'");
             builder.append(' ');
             selectDeep = builder.toString();
         }
@@ -191,8 +211,12 @@ public class WayDao extends AbstractDao<Way, Long> {
         Way entity = loadCurrent(cursor, 0, lock);
         int offset = getAllColumns().length;
 
-        Node node = loadCurrentOther(daoSession.getNodeDao(), cursor, offset);
-        entity.setNode(node);
+        Node sourceNode = loadCurrentOther(daoSession.getNodeDao(), cursor, offset);
+        entity.setSourceNode(sourceNode);
+        offset += daoSession.getNodeDao().getAllColumns().length;
+
+        Node targetNode = loadCurrentOther(daoSession.getNodeDao(), cursor, offset);
+        entity.setTargetNode(targetNode);
 
         return entity;    
     }

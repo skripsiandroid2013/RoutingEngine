@@ -11,8 +11,8 @@ public class Way {
 
     private Long id;
     private String wayID;
-    private Long sourceNode;
-    private Long targetNode;
+    private Long fk_sourceNode;
+    private Long fk_targetNode;
     private Double weight;
 
     /** Used to resolve relations */
@@ -21,8 +21,11 @@ public class Way {
     /** Used for active entity operations. */
     private transient WayDao myDao;
 
-    private Node node;
-    private Long node__resolvedKey;
+    private Node sourceNode;
+    private Long sourceNode__resolvedKey;
+
+    private Node targetNode;
+    private Long targetNode__resolvedKey;
 
 
     public Way() {
@@ -32,18 +35,18 @@ public class Way {
         this.id = id;
     }
     
-    public Way(String wayID, Long sourceNode, Long targetNode, Double weight) {
+    public Way(String wayID, Long fk_sourceNode, Long fk_targetNode, Double weight) {
         this.wayID = wayID;
-        this.sourceNode = sourceNode;
-        this.targetNode = targetNode;
+        this.fk_sourceNode = fk_sourceNode;
+        this.fk_targetNode = fk_targetNode;
         this.weight = weight;
     }
 
-    public Way(Long id, String wayID, Long sourceNode, Long targetNode, Double weight) {
+    public Way(Long id, String wayID, Long fk_sourceNode, Long fk_targetNode, Double weight) {
         this.id = id;
         this.wayID = wayID;
-        this.sourceNode = sourceNode;
-        this.targetNode = targetNode;
+        this.fk_sourceNode = fk_sourceNode;
+        this.fk_targetNode = fk_targetNode;
         this.weight = weight;
     }
 
@@ -69,20 +72,20 @@ public class Way {
         this.wayID = wayID;
     }
 
-    public Long getSourceNode() {
-        return sourceNode;
+    public Long getFk_sourceNode() {
+        return fk_sourceNode;
     }
 
-    public void setSourceNode(Long sourceNode) {
-        this.sourceNode = sourceNode;
+    public void setFk_sourceNode(Long fk_sourceNode) {
+        this.fk_sourceNode = fk_sourceNode;
     }
 
-    public Long getTargetNode() {
-        return targetNode;
+    public Long getFk_targetNode() {
+        return fk_targetNode;
     }
 
-    public void setTargetNode(Long targetNode) {
-        this.targetNode = targetNode;
+    public void setFk_targetNode(Long fk_targetNode) {
+        this.fk_targetNode = fk_targetNode;
     }
 
     public Double getWeight() {
@@ -94,27 +97,52 @@ public class Way {
     }
 
     /** To-one relationship, resolved on first access. */
-    public Node getNode() {
-        Long __key = this.sourceNode;
-        if (node__resolvedKey == null || !node__resolvedKey.equals(__key)) {
+    public Node getSourceNode() {
+        Long __key = this.fk_sourceNode;
+        if (sourceNode__resolvedKey == null || !sourceNode__resolvedKey.equals(__key)) {
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
             NodeDao targetDao = daoSession.getNodeDao();
-            Node nodeNew = targetDao.load(__key);
+            Node sourceNodeNew = targetDao.load(__key);
             synchronized (this) {
-                node = nodeNew;
-            	node__resolvedKey = __key;
+                sourceNode = sourceNodeNew;
+            	sourceNode__resolvedKey = __key;
             }
         }
-        return node;
+        return sourceNode;
     }
 
-    public void setNode(Node node) {
+    public void setSourceNode(Node sourceNode) {
         synchronized (this) {
-            this.node = node;
-            sourceNode = node == null ? null : node.getNodeID();
-            node__resolvedKey = sourceNode;
+            this.sourceNode = sourceNode;
+            fk_sourceNode = sourceNode == null ? null : sourceNode.getNodeID();
+            sourceNode__resolvedKey = fk_sourceNode;
+        }
+    }
+
+    /** To-one relationship, resolved on first access. */
+    public Node getTargetNode() {
+        Long __key = this.fk_targetNode;
+        if (targetNode__resolvedKey == null || !targetNode__resolvedKey.equals(__key)) {
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            NodeDao targetDao = daoSession.getNodeDao();
+            Node targetNodeNew = targetDao.load(__key);
+            synchronized (this) {
+                targetNode = targetNodeNew;
+            	targetNode__resolvedKey = __key;
+            }
+        }
+        return targetNode;
+    }
+
+    public void setTargetNode(Node targetNode) {
+        synchronized (this) {
+            this.targetNode = targetNode;
+            fk_targetNode = targetNode == null ? null : targetNode.getNodeID();
+            targetNode__resolvedKey = fk_targetNode;
         }
     }
 
