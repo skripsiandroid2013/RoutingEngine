@@ -60,15 +60,15 @@ public class TestActivity extends Activity {
 
 				Log.i(TAG, "Graph ready!");
 				//TODO dijkstra
-//				Dijkstra.computePaths(result.toVertex("1721121228"));
-//				List<Vertex> path = Dijkstra.getShortestPathTo(result
-//						.toVertex("1722835557"));
+				Dijkstra.computePaths(result.toVertex("1721121228"));
+				List<Vertex> path = Dijkstra.getShortestPathTo(result
+						.toVertex("1722835557"));
 				
 				//TODO astar
-				AStarHeuristic heuristic = new EuclidianHeuristic();
-				AStar aStar = new AStar(graphAdapter, heuristic);
-				aStar.computePaths(result.toVertex("1721121228"), result.toVertex("1722835557"));
-				List<Vertex> path = aStar.getShortestPath();
+//				AStarHeuristic heuristic = new EuclidianHeuristic();
+//				AStar aStar = new AStar(graphAdapter, heuristic);
+//				aStar.computePaths(result.toVertex("1721121228"), result.toVertex("1722835557"));
+//				List<Vertex> path = aStar.getShortestPath();
 				graphAdapter.close();
 				sw.stop().getSeconds();
 				Log.i(TAG, path + " " + sw);
