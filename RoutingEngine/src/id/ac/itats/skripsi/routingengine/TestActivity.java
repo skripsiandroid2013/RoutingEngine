@@ -3,7 +3,10 @@ package id.ac.itats.skripsi.routingengine;
 import java.util.List;
 
 import id.ac.itats.skripsi.databuilder.GraphAdapter;
+import id.ac.itats.skripsi.shortestpath.AStar;
+import id.ac.itats.skripsi.shortestpath.AStarHeuristic;
 import id.ac.itats.skripsi.shortestpath.Dijkstra;
+import id.ac.itats.skripsi.shortestpath.EuclidianHeuristic;
 import id.ac.itats.skripsi.shortestpath.model.Graph;
 import id.ac.itats.skripsi.shortestpath.model.Vertex;
 import id.ac.itats.skripsi.util.StopWatch;
@@ -47,7 +50,7 @@ public class TestActivity extends Activity {
 				graphAdapter.open();
 				sw.start();
 				graph = graphAdapter.buildGraph2();
-				graphAdapter.close();
+				
 
 				return graph;
 			}
@@ -56,12 +59,19 @@ public class TestActivity extends Activity {
 			protected void onPostExecute(Graph result) {
 
 				Log.i(TAG, "Graph ready!");
-
-				Dijkstra.computePaths(result.toVertex("1721121228"));
-				List<Vertex> path = Dijkstra.getShortestPathTo(result
-						.toVertex("1722835557"));
+				//TODO dijkstra
+//				Dijkstra.computePaths(result.toVertex("1721121228"));
+//				List<Vertex> path = Dijkstra.getShortestPathTo(result
+//						.toVertex("1722835557"));
+				
+				//TODO astar
+				AStarHeuristic heuristic = new EuclidianHeuristic();
+				AStar aStar = new AStar(graphAdapter, heuristic);
+				aStar.computePaths(result.toVertex("1721121228"), result.toVertex("1722835557"));
+				List<Vertex> path = aStar.getShortestPath();
+				graphAdapter.close();
 				sw.stop().getSeconds();
-				System.out.println(path + " " + sw);
+				Log.i(TAG, path + " " + sw);
 			}
 		}.execute();
 

@@ -9,7 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-public class DBGeneratorEmpat {
+public class DBGenerator {
 
 	public static void main(String[] args) throws Exception {
 		Connection c = null;
