@@ -1,5 +1,7 @@
 package id.ac.itats.skripsi.shortestpath.model;
 
+import id.ac.itats.skripsi.orm.Node;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,18 +11,18 @@ public class Graph {
 	private HashMap<String, Vertex> vertices = new HashMap<String, Vertex>();
 	private List<Edge> edges = new LinkedList<Edge>();
 
-	public void addEdge(String edgeId, String fromId, String toId, double weight ) {
-		Vertex fromVertex = vertices.get(fromId);
+	public void addEdge(String edgeId, Node sourceNode, Node targetNode, double weight ) {
+		Vertex fromVertex = vertices.get(sourceNode.toString());
 		if (fromVertex == null) {
-			fromVertex = new Vertex(fromId);
-			vertices.put(fromId, fromVertex);
+			fromVertex = new Vertex(sourceNode);
+			vertices.put(sourceNode.toString(), fromVertex);
 		}
-		Vertex toVertex = vertices.get(toId);
+		Vertex toVertex = vertices.get(targetNode.toString());
 		if (toVertex == null) {
-			toVertex = new Vertex(toId);
-			vertices.put(toId, toVertex);
+			toVertex = new Vertex(targetNode);
+			vertices.put(targetNode.toString(), toVertex);
 		}
-		Edge edge = new Edge(toVertex, weight, edgeId);
+		Edge edge = new Edge(edgeId, toVertex, weight);
 		edges.add(edge);
 		fromVertex.adjacencies.add(edge);
 		

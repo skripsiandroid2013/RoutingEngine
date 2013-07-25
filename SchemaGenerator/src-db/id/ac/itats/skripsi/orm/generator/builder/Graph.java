@@ -26,7 +26,7 @@ public class Graph {
 			vertices.put(target, targetNode);
 		}
 		Way edge = new Way(wayID,source,target,weight);
-		sourceNode.getAdjacentList().add(edge);
+		sourceNode.getSourceAdjacentList().add(edge);
 		edges.add(edge);
 	}
 

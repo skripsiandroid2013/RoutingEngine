@@ -1,12 +1,13 @@
 package id.ac.itats.skripsi.routingengine;
 
-import java.util.List;
-
 import id.ac.itats.skripsi.databuilder.GraphAdapter;
 import id.ac.itats.skripsi.shortestpath.Dijkstra;
 import id.ac.itats.skripsi.shortestpath.model.Graph;
 import id.ac.itats.skripsi.shortestpath.model.Vertex;
 import id.ac.itats.skripsi.util.StopWatch;
+
+import java.util.List;
+
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,7 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 
 public class TestActivity extends Activity {
-	protected static final String TAG = "ORMTest";
+	protected static final String TAG = "TestActivity";
 	private GraphAdapter graphAdapter;
 	private Graph graph;
 
@@ -46,7 +47,8 @@ public class TestActivity extends Activity {
 				graphAdapter.createDatabase();
 				graphAdapter.open();
 				sw.start();
-				graph = graphAdapter.buildGraph2();
+				graph = graphAdapter.buildGraphDeep();
+				sw.stop().getSeconds();
 				graphAdapter.close();
 
 				return graph;
@@ -55,13 +57,21 @@ public class TestActivity extends Activity {
 			@Override
 			protected void onPostExecute(Graph result) {
 
-				Log.i(TAG, "Graph ready!");
-
+				Log.i(TAG, "Graph ready! "+ sw);
+				//XXX test graph
+//				int i = 1;
+//				for(Edge e : result.getEdges()){
+//					System.out.println("("+ i + ") " +e);
+//				 	i++;
+//				}
+				
+				//XXX dijkstra
+				sw.start();
 				Dijkstra.computePaths(result.toVertex("1721121228"));
 				List<Vertex> path = Dijkstra.getShortestPathTo(result
 						.toVertex("1722835557"));
 				sw.stop().getSeconds();
-				System.out.println(path + " " + sw);
+				Log.i(TAG,path + "\nDijkstra runtime " + sw);
 			}
 		}.execute();
 

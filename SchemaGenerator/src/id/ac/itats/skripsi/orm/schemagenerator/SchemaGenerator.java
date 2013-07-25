@@ -4,14 +4,13 @@ import de.greenrobot.daogenerator.DaoGenerator;
 import de.greenrobot.daogenerator.Entity;
 import de.greenrobot.daogenerator.Property;
 import de.greenrobot.daogenerator.Schema;
-import de.greenrobot.daogenerator.ToMany;
 
 public class SchemaGenerator {
 	public static void main(String[] args) throws Exception {
-		Schema schema = new Schema(1, "id.ac.itats.skripsi.orm");
+		Schema schema = new Schema(2, "id.ac.itats.skripsi.orm");
 
 		addGraph(schema);
-		new DaoGenerator().generateAll(schema, "../SchemaGeneratorEmpat/src-gen");
+		new DaoGenerator().generateAll(schema, "../SchemaGenerator/src-gen");
 	}
 
 	private static void addGraph(Schema schema) {
@@ -20,19 +19,23 @@ public class SchemaGenerator {
 		node.addLongProperty("nodeID").primaryKey().index();
 		node.addStringProperty("latitude");
 		node.addStringProperty("longitude");
-
+		
 		Entity way = schema.addEntity("Way");
 		way.setTableName("WAY");
 		way.addIdProperty().autoincrement();
 		way.addStringProperty("wayID");
-		Property sourceNode = way.addLongProperty("sourceNode").getProperty();
-		way.addToOne(node, sourceNode);
-		way.addLongProperty("targetNode").index();
-		way.addDoubleProperty("weight");
-
 		
-		ToMany adjacencies = node.addToMany(way, sourceNode);
-		adjacencies.setName("adjacencies");
+		Property sourceNode = way.addLongProperty("fk_sourceNode").index().getProperty(); //fk_sourceNode		
+		way.addToOne(node, sourceNode, "sourceNode");	//many (edge) TO one (sourceNode) 
+		
+		Property targetNode = way.addLongProperty("fk_targetNode").index().getProperty(); //fk_targetNode
+		way.addToOne(node, targetNode, "targetNode"); //many (edge) TO one (targetNodeNode)
+		
+		way.addDoubleProperty("weight");
+		
+		node.addToMany(way, sourceNode, "sourceAdjacencies"); // one (sourceNode) TO many (edge)
+		node.addToMany(way, targetNode, "targetAdjacencies"); // one (targetNode) TO many (edge)
+		
 	}
 
 }

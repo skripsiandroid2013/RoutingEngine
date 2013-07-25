@@ -17,7 +17,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "GraphDB-4",
+		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "GraphDB-1",
 				null);
 		db = helper.getWritableDatabase();
 		new DaoMaster(db);

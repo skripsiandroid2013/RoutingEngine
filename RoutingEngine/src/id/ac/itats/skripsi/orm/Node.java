@@ -87,7 +87,7 @@ public class Node {
     //manual code
     public List<Way> getSourceAdjacentList() {
         if (sourceAdjacencies == null) {
-            sourceAdjacencies = new LinkedList<>();
+            sourceAdjacencies = new LinkedList<Way>();
         }
         return sourceAdjacencies;
     }
@@ -142,5 +142,13 @@ public class Node {
         }    
         myDao.refresh(this);
     }
+
+	@Override
+	public String toString() {
+		return nodeID.toString();
+	}
+    
+    //manual code
+    
 
 }

@@ -43,7 +43,7 @@ public class GraphAdapter {
 	// untuk generate schema dari greendao entity
 	private void prepareDB() {
 		DevOpenHelper helper = new DaoMaster.DevOpenHelper(mContext,
-				"GraphDB-4", null);
+				"GraphDB-1", null);
 		mDb = helper.getReadableDatabase();
 		daoMaster = new DaoMaster(mDb);
 	}
@@ -107,8 +107,7 @@ public class GraphAdapter {
 		List<Way> result = wayDao.queryBuilder().orderAsc(WayDao.Properties.Id)
 				.list();
 		for (Way way : result) {
-			this.graph.addEdge(way.getWayID(), "" + way.getSourceNode(), ""
-					+ way.getTargetNode(), way.getWeight());
+			this.graph.addEdge(way.getWayID(),way.getSourceNode(),way.getTargetNode(), way.getWeight());
 		}
 
 		return this.graph;
@@ -124,8 +123,9 @@ public class GraphAdapter {
 
 		while (!cursor.isAfterLast()) {
 			Way way = cursorToWay(cursor);
-			this.graph.addEdge(way.getWayID(), "" + way.getSourceNode(), ""
-					+ way.getTargetNode(), way.getWeight());
+
+			this.graph.addEdge(way.getWayID(), way.getSourceNode(),
+					way.getTargetNode(), way.getWeight());
 
 			cursor.moveToNext();
 		}
@@ -133,6 +133,37 @@ public class GraphAdapter {
 
 		return this.graph;
 
+	}
+	
+	//XXX 51.73883 Second (bind node to vertex, use for astar heuristic calculation)
+	public Graph buildGraphDeep(){
+		String wayId = WayDao.Properties.Id.columnName;
+	//	int rowCount = mDb.rawQuery("SELECT "+ wayId +" FROM WAY", null).getCount();
+		int rowCount = 53702;
+		
+		int i = 0;
+		int j = 1000;
+		do {
+		List<Way> ways = wayDao.queryDeep("WHERE T." + wayId + " BETWEEN ? AND ?  ", new String[]{""+i , ""+j});
+		for(Way way : ways) {
+			this.graph.addEdge(way.getWayID(),way.getSourceNode(),
+					way.getTargetNode(), way.getWeight());
+		}		
+		i = j+1;
+		j += 1000;
+		
+		} while (j<=rowCount);
+	
+		List<Way> ways = wayDao.queryDeep("WHERE T." + wayId + ">?", ""+(j - 1000));
+		for(Way way : ways) {
+			this.graph.addEdge(way.getWayID(),way.getSourceNode(),
+					way.getTargetNode(), way.getWeight());
+		}
+		
+//		Log.i("Graph-Edge", ""+graph.getEdges().size());
+//		Log.i("Graph-vertex", ""+graph.getVertices().size());
+		
+		return graph;
 	}
 
 	//
@@ -156,8 +187,8 @@ public class GraphAdapter {
 	private Way cursorToWay(Cursor cursor) {
 		Way way = new Way();
 		way.setWayID(cursor.getString(1));
-		way.setSourceNode(cursor.getLong(2));
-		way.setTargetNode(cursor.getLong(3));
+		way.setFk_sourceNode(cursor.getLong(2));
+		way.setFk_targetNode(cursor.getLong(3));
 		way.setWeight(cursor.getDouble(4));
 		return way;
 	}
