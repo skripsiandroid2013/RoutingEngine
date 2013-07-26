@@ -1,6 +1,5 @@
 package id.ac.itats.skripsi.shortestpath;
 
-import id.ac.itats.skripsi.orm.Node;
 import id.ac.itats.skripsi.shortestpath.model.Edge;
 import id.ac.itats.skripsi.shortestpath.model.Vertex;
 
@@ -67,10 +66,8 @@ public class AStar {
 
 	private double calcHeuristic(Vertex source, Vertex target) {
 
-		Node start = source.node;
-		Node goal = target.node;
-		double x = start.getPoint().getX() - goal.getPoint().getX();
-		double y = start.getPoint().getY() - goal.getPoint().getY();
+		double x = source.point.getX() - target.point.getX();
+		double y = source.point.getY() - target.point.getY();
 
 		return Math.sqrt(x * x + y * y);
 	}

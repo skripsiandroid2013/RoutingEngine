@@ -73,7 +73,7 @@ public class TestActivity extends Activity {
 //				sw.stop().getSeconds();
 //				Log.i(TAG,path + "\nDijkstra runtime " + sw);
 				
-				//XXX AStar
+				//XXX AStar runtime  time: 106.24475 Second
 				sw.start();
 				AStar aStar = new AStar();
 				aStar.computePaths(result.toVertex("1721121228"), result
