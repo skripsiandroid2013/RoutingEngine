@@ -18,6 +18,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+// test fetch arga
 public class GraphAdapter {
 	protected static final String TAG = "GraphAdapter";
 
