@@ -107,7 +107,8 @@ public class GraphAdapter {
 		List<Way> result = wayDao.queryBuilder().orderAsc(WayDao.Properties.Id)
 				.list();
 		for (Way way : result) {
-			this.graph.addEdge(way.getWayID(),way.getSourceNode(),way.getTargetNode(), way.getWeight());
+			this.graph.addEdge(way.getWayID(), ""+way.getFk_sourceNode(), way.getSourceNode().getPoint(),
+					""+way.getFk_targetNode(),way.getTargetNode().getPoint(), way.getWeight());
 		}
 
 		return this.graph;
@@ -123,9 +124,8 @@ public class GraphAdapter {
 
 		while (!cursor.isAfterLast()) {
 			Way way = cursorToWay(cursor);
-
-			this.graph.addEdge(way.getWayID(), way.getSourceNode(),
-					way.getTargetNode(), way.getWeight());
+			this.graph.addEdge(way.getWayID(), ""+way.getFk_sourceNode(), way.getSourceNode().getPoint(),
+					""+way.getFk_targetNode(),way.getTargetNode().getPoint(), way.getWeight());
 
 			cursor.moveToNext();
 		}
@@ -146,8 +146,8 @@ public class GraphAdapter {
 		do {
 		List<Way> ways = wayDao.queryDeep("WHERE T." + wayId + " BETWEEN ? AND ?  ", new String[]{""+i , ""+j});
 		for(Way way : ways) {
-			this.graph.addEdge(way.getWayID(),way.getSourceNode(),
-					way.getTargetNode(), way.getWeight());
+			this.graph.addEdge(way.getWayID(), ""+way.getFk_sourceNode(), way.getSourceNode().getPoint(),
+					""+way.getFk_targetNode(),way.getTargetNode().getPoint(), way.getWeight());
 		}		
 		i = j+1;
 		j += 1000;
@@ -156,8 +156,8 @@ public class GraphAdapter {
 	
 		List<Way> ways = wayDao.queryDeep("WHERE T." + wayId + ">?", ""+(j - 1000));
 		for(Way way : ways) {
-			this.graph.addEdge(way.getWayID(),way.getSourceNode(),
-					way.getTargetNode(), way.getWeight());
+			this.graph.addEdge(way.getWayID(), ""+way.getFk_sourceNode(), way.getSourceNode().getPoint(),
+					""+way.getFk_targetNode(),way.getTargetNode().getPoint(), way.getWeight());
 		}
 		
 //		Log.i("Graph-Edge", ""+graph.getEdges().size());

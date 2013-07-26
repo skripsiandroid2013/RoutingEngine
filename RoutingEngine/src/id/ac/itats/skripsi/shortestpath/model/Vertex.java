@@ -1,14 +1,15 @@
 package id.ac.itats.skripsi.shortestpath.model;
 
-import id.ac.itats.skripsi.orm.Node;
-
 import java.util.LinkedList;
 
+import com.vividsolutions.jts.geom.Point;
+
 public class Vertex implements Comparable<Vertex> {
-	public final Node node;
+	public final String name;
+	public final Point point;
 
 	public LinkedList<Edge> adjacencies = new LinkedList<Edge>();
-	public double minDistance ;
+	public double minDistance = Double.POSITIVE_INFINITY;
 	public double costG = Double.POSITIVE_INFINITY;
 	public Vertex previous;
 
@@ -17,8 +18,9 @@ public class Vertex implements Comparable<Vertex> {
 
 	
 
-	public Vertex(Node argName) {
-		node = argName;
+	public Vertex(String argName, Point argPoint) {
+		name = argName;
+		point = argPoint;
 		onOpenList = false;
 		onClosedList = false;
 	}
@@ -26,7 +28,7 @@ public class Vertex implements Comparable<Vertex> {
 	
 	@Override
 	public String toString() {
-		return node.toString();
+		return name;
 	}
 
 	@Override

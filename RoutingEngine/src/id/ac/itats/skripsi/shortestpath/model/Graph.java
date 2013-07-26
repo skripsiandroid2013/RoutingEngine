@@ -1,26 +1,26 @@
 package id.ac.itats.skripsi.shortestpath.model;
 
-import id.ac.itats.skripsi.orm.Node;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Point;
+
 public class Graph {
 	private HashMap<String, Vertex> vertices = new HashMap<String, Vertex>();
 	private List<Edge> edges = new LinkedList<Edge>();
 
-	public void addEdge(String edgeId, Node sourceNode, Node targetNode, double weight ) {
-		Vertex fromVertex = vertices.get(sourceNode.toString());
+	public void addEdge(String edgeId, String source, Point sourcePoint, String target, Point targetPoint, double weight ) {
+		Vertex fromVertex = vertices.get(source);
 		if (fromVertex == null) {
-			fromVertex = new Vertex(sourceNode);
-			vertices.put(sourceNode.toString(), fromVertex);
+			fromVertex = new Vertex(source,sourcePoint);
+			vertices.put(source, fromVertex);
 		}
-		Vertex toVertex = vertices.get(targetNode.toString());
+		Vertex toVertex = vertices.get(target);
 		if (toVertex == null) {
-			toVertex = new Vertex(targetNode);
-			vertices.put(targetNode.toString(), toVertex);
+			toVertex = new Vertex(target, targetPoint);
+			vertices.put(target, toVertex);
 		}
 		Edge edge = new Edge(edgeId, toVertex, weight);
 		edges.add(edge);
