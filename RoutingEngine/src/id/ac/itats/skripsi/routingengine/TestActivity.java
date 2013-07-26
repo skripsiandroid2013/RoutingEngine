@@ -1,7 +1,7 @@
 package id.ac.itats.skripsi.routingengine;
 
 import id.ac.itats.skripsi.databuilder.GraphAdapter;
-import id.ac.itats.skripsi.shortestpath.Dijkstra;
+import id.ac.itats.skripsi.shortestpath.AStar;
 import id.ac.itats.skripsi.shortestpath.model.Graph;
 import id.ac.itats.skripsi.shortestpath.model.Vertex;
 import id.ac.itats.skripsi.util.StopWatch;
@@ -66,12 +66,21 @@ public class TestActivity extends Activity {
 //				}
 				
 				//XXX dijkstra
+//				sw.start();
+//				Dijkstra.computePaths(result.toVertex("1721121228"));
+//				List<Vertex> path = Dijkstra.getShortestPathTo(result
+//						.toVertex("1722835557"));
+//				sw.stop().getSeconds();
+//				Log.i(TAG,path + "\nDijkstra runtime " + sw);
+				
+				//XXX AStar
 				sw.start();
-				Dijkstra.computePaths(result.toVertex("1721121228"));
-				List<Vertex> path = Dijkstra.getShortestPathTo(result
+				AStar aStar = new AStar();
+				aStar.computePaths(result.toVertex("1721121228"), result
 						.toVertex("1722835557"));
-				sw.stop().getSeconds();
-				Log.i(TAG,path + "\nDijkstra runtime " + sw);
+				List<Vertex> path = aStar.getShortestPath();
+				Log.i(TAG,path + "\nAStar runtime " + sw);
+				
 			}
 		}.execute();
 
