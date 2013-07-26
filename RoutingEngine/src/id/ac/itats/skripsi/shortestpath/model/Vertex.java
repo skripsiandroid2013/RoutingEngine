@@ -8,13 +8,22 @@ public class Vertex implements Comparable<Vertex> {
 	public final Node node;
 
 	public LinkedList<Edge> adjacencies = new LinkedList<Edge>();
-	public double minDistance = Double.POSITIVE_INFINITY;
+	public double minDistance ;
+	public double costG = Double.POSITIVE_INFINITY;
 	public Vertex previous;
+
+	public boolean onOpenList;
+	public boolean onClosedList;
+
+	
 
 	public Vertex(Node argName) {
 		node = argName;
+		onOpenList = false;
+		onClosedList = false;
 	}
 
+	
 	@Override
 	public String toString() {
 		return node.toString();
